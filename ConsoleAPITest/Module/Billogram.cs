@@ -58,11 +58,23 @@ namespace ConsoleAPITest.Module
     /// </summary>
     public class BillogramCreate
     {
-        public Customer customer { get; set; }
-        public Item[] Items { get; set; }
-        public Info Info { get; set; }
+        public CustomerMini customer { get; set; }
+        public ItemMini[] items { get; set; }
+        public Info info { get; set; }
         public On_success on_success { get; set; }
     }
+
+    /// <summary>
+    /// Beskrivning av Customer för create av ett billogram.
+    /// Begränsat antal attribute.
+    /// </summary>
+    public class CustomerMini
+    {
+        public int? customer_no { get; set; }
+    }
+    /// <summary>
+    /// Beskrivning av Detailed_sum  ett sub-class i billogram
+    /// </summary>
     public class Detailed_sum
     {
         public decimal credited_sum { get; set; }
@@ -93,6 +105,19 @@ namespace ConsoleAPITest.Module
         public Bookkeeping bookkeeping { get; set; }
         public int vat { get; set; }
     }
+
+    /// <summary>
+    /// Beskrivning av Item för create av ett billogram.
+    /// Begränsat antal attribute
+    /// </summary>
+    public class ItemMini
+    {
+        public decimal count { get; set; }
+        public string item_no { get; set; }
+        public string title { get; set; }
+        public decimal price { get; set; }
+        public int vat { get; set; }
+    }
     /// <summary>
     /// Beskrivning av bokföringsuppgifter i ett billogram
     /// </summary>
@@ -109,25 +134,25 @@ namespace ConsoleAPITest.Module
         public decimal Rotavdrag_sum { get; set; }
 
         //"electricity_collection": Depricate
-        public DateTime Autogiro_payment_date { get; set; }
-        public string Autogiro_status { get; set; }
-        public string Rotavdrag_housing_association_org_no { get; set; }
-        public string Autogiro_full_status { get; set; }
+        public DateTime autogiro_payment_date { get; set; }
+        public string autogiro_status { get; set; }
+        public string rotavdrag_housing_association_org_no { get; set; }
+        public string autogiro_full_status { get; set; }
         public Edi edi { get; set; }
-        public decimal Efaktura_requested_amount { get; set; }
-        public string Rotavdrag_description { get; set; }
-        public decimal Autogiro_total_sum { get; set; }
-        public string Efaktura_recipient_bank_code { get; set; }
-        public string Rotavdrag_apartment_designation { get; set; }
-        public string Rotavdrag_description_of_property { get; set; }
-        public string Efaktura_recipient_bank_id { get; set; }
-        public Boolean Rotavdrag { get; set; }
-        public string Efaktura_recipient_type { get; set; }
-        public string Efaktura_recipient_bank_name { get; set; }
-        public string Autogiro_betalarnummer { get; set; }
-        public Boolean Reversed_vat { get; set; }
-        public string Efaktura_recipient_identifier { get; set; }
-        public string Efaktura_recipient_id_number { get; set; }
+        public decimal efaktura_requested_amount { get; set; }
+        public string rotavdrag_description { get; set; }
+        public decimal autogiro_total_sum { get; set; }
+        public string efaktura_recipient_bank_code { get; set; }
+        public string rotavdrag_apartment_designation { get; set; }
+        public string rotavdrag_description_of_property { get; set; }
+        public string efaktura_recipient_bank_id { get; set; }
+        public Boolean rotavdrag { get; set; }
+        public string efaktura_recipient_type { get; set; }
+        public string efaktura_recipient_bank_name { get; set; }
+        public string autogiro_betalarnummer { get; set; }
+        public Boolean reversed_vat { get; set; }
+        public string efaktura_recipient_identifier { get; set; }
+        public string efaktura_recipient_id_number { get; set; }
 
         public class Edi
         {

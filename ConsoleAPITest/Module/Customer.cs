@@ -4,13 +4,18 @@ using System.Text;
 
 namespace ConsoleAPITest.Module
 {
+    /// <summary>
+    /// Class beskrivning för Get av Customer 
+    /// </summary>
     public class CustomerResponse
     {
         //public string Id { get; set; }
         public string status { get; set; }
         public Customer data { get; set; }
     }
-
+    /// <summary>
+    /// Beskrivning av Customer med sub-classer
+    /// </summary>
     public class Customer
     {
         public int? customer_no { get; set; }
@@ -20,11 +25,14 @@ namespace ConsoleAPITest.Module
         public Delivery_address delivery_address { get; set; }
         public Contact contact { get; set; }
         public Address address { get; set; }
-        //public DateTime created_at { get; set; }
-        //public DateTime updated_at { get; set; }
-        //public Company_type company_type { get; set; }
+        public DateTime created_at { get; set; }
+        public DateTime updated_at { get; set; }
+        public Company_type company_type { get; set; }
     }
 
+    /// <summary>
+    /// Beskrivning av Company_type enum subclass i Customer
+    /// </summary>
     public enum Company_type
     {
         business,
@@ -32,6 +40,10 @@ namespace ConsoleAPITest.Module
         foreignbusiness,
         foreignindividual
     }
+
+    /// <summary>
+    /// Beskrivning av Delivery_address subclass i Customer
+    /// </summary>
     public class Delivery_address
     {
         public string city { get; set; }
@@ -41,6 +53,10 @@ namespace ConsoleAPITest.Module
         public string careof { get; set; }
         public string street_address { get; set; }
     }
+
+    /// <summary>
+    /// Beskrivning av Contact subclass i Customer
+    /// </summary>
     public class Contact
     {
         public string phone { get; set; }
@@ -53,6 +69,10 @@ namespace ConsoleAPITest.Module
             name = Name;
         }
     }
+
+    /// <summary>
+    /// Beskrivning av Adress subclass i Customer
+    /// </summary>
     public class Address
     {
         public string city { get; set; }

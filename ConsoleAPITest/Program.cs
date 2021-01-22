@@ -21,7 +21,7 @@ namespace ConsoleAPITest
         public string Category { get; set; }
     }
 
-   
+
 
     class Program
     {
@@ -97,14 +97,32 @@ namespace ConsoleAPITest
             }
             return customerResp;
         }
-        static async Task<Uri> CreateCustomerAsync(Customer customer)
+        static async Task<Customer> CreateCustomerAsync(Customer customer)
         {
+            CustomerResponse customerResponse = null;
+            try
+            {
             HttpResponseMessage response = await client.PostAsJsonAsync(
                 "api/v2/customer", customer);
-            response.EnsureSuccessStatusCode();
+            //response.EnsureSuccessStatusCode();
+                if (response.IsSuccessStatusCode)
+                {
+                    var cont = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine("RESPONS av CustomerCreate");
+                    customerResponse = await response.Content.ReadAsAsync<CustomerResponse>();
+                    Console.WriteLine(JsonSerializer.Serialize(customerResponse));
+
+                }
 
             // return URI of the created resource.
             return response.Headers.Location;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            return customerResponse;
         }
         static async Task<Customer> UpdateCustomerAsync(Customer customer)
         {
@@ -126,8 +144,9 @@ namespace ConsoleAPITest
 
         static void ShowBillogram(BillogramResponse billogram)
         {
-            Console.WriteLine($"Status: {billogram.status} \tID: {billogram.data.Id} \tName: {billogram.data.customer.name} \tCustomerNo: {billogram.data.customer.customer_no}" +
+            Console.WriteLine($"BILLOGRAMResponse \nStatus: {billogram.status} \tID: {billogram.data.Id} \tName: {billogram.data.customer.name} \tCustomerNo: {billogram.data.customer.customer_no}" +
                 $"\tTotalSum: {billogram.data.Total_sum} \tInvoiceNo: {billogram.data.Invoice_no}" +
+                $"\tRecipient_Url: {billogram.data.Recipient_url} " +
                 $"\tAdress: {billogram.data.customer.address.street_address}  "
                 );
         }
@@ -139,7 +158,7 @@ namespace ConsoleAPITest
             HttpResponseMessage response = await client.GetAsync(path);
             if (response.IsSuccessStatusCode)
             {
-                
+
                 var cont = await response.Content.ReadAsStringAsync();
                 Console.WriteLine(cont);
                 billogramResp = await response.Content.ReadAsAsync<BillogramResponse>();
@@ -151,31 +170,42 @@ namespace ConsoleAPITest
         /// </summary>
         /// <param name="billogram"></param>
         /// <returns>Uri</returns>
-        static async Task<Uri> CreateBillogramAsync(BillogramCreate billogram)
+        static async Task<BillogramResponse> CreateBillogramAsync(BillogramCreate billogram)
         {
-
+            BillogramResponse billogramResp = null;
             var jsonStr = JsonSerializer.Serialize(billogram);
             Console.WriteLine(jsonStr);
 
             Uri respUri = null;
-
-            // skicka på ett Billogram
-            HttpResponseMessage response = await client.PostAsJsonAsync(
-                "api/v2/billogram", billogram);
-            response.EnsureSuccessStatusCode();
-            if (response.IsSuccessStatusCode)
+            try
             {
-                respUri = response.Headers.Location;
+                // skicka på ett Billogram
+                HttpResponseMessage response = await client.PostAsJsonAsync(
+                    "api/v2/billogram", billogram);
+                //response.EnsureSuccessStatusCode();
+                if (response.IsSuccessStatusCode)
+                {
+                    respUri = response.Headers.Location;
+                    var cont = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine(cont);
+                     billogramResp = await response.Content.ReadAsAsync<BillogramResponse>();
+                }
+                else
+                {
+                    Console.WriteLine(jsonStr);
+                    Console.WriteLine($"ERROR: StatusCode: {response.StatusCode} ResonPhrese: {response.ReasonPhrase}");
+                    Console.WriteLine(JsonSerializer.Serialize(response));
+                }
             }
-            else
+            catch (Exception e)
             {
-                Console.WriteLine(jsonStr);
-                Console.WriteLine($"ERROR: StatusCode: {response.StatusCode} ResonPhrese: {response.ReasonPhrase}");
-                Console.WriteLine(JsonSerializer.Serialize(response));
+                string msg = e.Message;
+                Console.WriteLine($"ERROR: Msg: {msg}");
+                throw;
             }
 
             // return URI of the created resource.
-            return respUri;
+            return billogramResp;
         }
 
         #endregion
@@ -227,7 +257,7 @@ namespace ConsoleAPITest
                 nyCustomer.customer_no = 12370;
                 nyCustomer.name = "Levander Company";
                 //nyCustomer.org_no = "554466-1234";
-                nyCustomer.address = new Address("Täby", "SE", "18773","", "Nathoertsvagen 56", false);
+                nyCustomer.address = new Address("Täby", "SE", "18773", "", "Nathoertsvagen 56", false);
                 nyCustomer.contact = new Contact("08-887766", "goran.test@test.com", "Goran Engstrom");
                 //var respCustomer = await CreateCustomerAsync(nyCustomer);
                 //Console.WriteLine(respCustomer);
@@ -240,31 +270,42 @@ namespace ConsoleAPITest
                 Console.WriteLine($"GetBillogram is done!!");
 
                 //POST Billogram
-                BillogramCreate billogram = new BillogramCreate();
+                BillogramCreate billogramCreate = new BillogramCreate();
                 //billogram.Invoice_date = DateTime.Now;
                 //billogram.Due_date = DateTime.Now.AddDays(30);
-                billogram.customer = new Customer();
-                billogram.customer.customer_no = 12370;
+                CustomerMini smallCustomer = new CustomerMini();
+                smallCustomer.customer_no = 12370;
+                billogramCreate.customer = smallCustomer;
                 // Skapa ett item
-                Item item = new Item();
+                ItemMini item = new ItemMini();
                 item.item_no = "4"; // Deltagaravg Rätt focus SME
                 item.title = "Produkt försäljning";
                 item.count = 1;
                 item.vat = 20;
-                item.price = 11235;
-                Item[] items = new Item[1] { item };
-                billogram.Items = items;
+                item.price = 125;
+                ItemMini item2 = new ItemMini();
+                item2.title = "Detta kan vara en textrad";
+                ItemMini item3 = new ItemMini();
+                item3.title = "Administattionskostnad";
+                item3.count = 1;
+                item3.price = 45;
+                item3.vat = 12;
+                ItemMini[] items = new ItemMini[3] { item, item2, item3 };
+                billogramCreate.items = items;
                 //Skapa ett Info
                 Info info = new Info();
-                info.Message = "Skapat via ConsoleAPI_Test";
-                //billogram.Info = info;
+                info.message = "Skapat via ConsoleAPI_Test";
+                billogramCreate.info = info;
                 On_success on_Success = new On_success();
                 on_Success.command = "send";
                 on_Success.method = "Email";
-                //billogram.on_success = on_Success;
+                billogramCreate.on_success = on_Success;
                 // Create Billogram
-                var billogramRespUri = await CreateBillogramAsync(billogram);
-                string uriBillo = billogramRespUri.ToString();
+                billogramResp = await CreateBillogramAsync(billogramCreate);
+                if(billogramResp != null)
+                {
+                    ShowBillogram(billogramResp);
+                }
 
                 //-----------------------------------------------
 
